@@ -9,6 +9,7 @@ import api from "../../services/api";
 import toastError from "../../errors/toastError";
 import { socketConnection } from "../../services/socket";
 import moment from "moment";
+import axios from "axios";
 const useAuth = () => {
   const history = useHistory();
   const [isAuth, setIsAuth] = useState(false);
@@ -92,10 +93,45 @@ const useAuth = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
+  const handleLicence = async () => {
+    try {
+      let dominio = window.location.hostname.replace("www.", "");
+      let licenca = await axios.post('https://gestaovix.com.br/licenca/api.php', { dominio })
+      if(licenca.data.success){
+        //toast.success('Licença válida');
+      }else{
+        toastError(`Licença inválida para o domínio ${window.location.hostname}, entre em contato com o suporte.`);
+        setTimeout(() => {
+          window.location.href = "https://masteriptv.online/novo/";
+        }, 2000);
+      }
+    } catch (err) {
+      toastError(err);
+    }
+  };
+  
+
   const handleLogin = async (userData) => {
     setLoading(true);
 
     try {
+
+      async function getLicenca() {
+        let dominio = window.location.hostname.replace("www.", "");
+        let licenca = await axios.post('https://gestaovix.com.br/licenca/api.php', { dominio })
+        return licenca.data.success ? true : false;
+      }
+
+      let licencaOk = await getLicenca();
+      
+      if(!licencaOk){
+        toastError(`Licença inválida para o domínio ${window.location.hostname}, entre em contato com o suporte.`);
+        setTimeout(() => {
+          window.location.href = "https://masteriptv.online/novo/";
+        }, 2000);
+        setLoading(false);
+        return
+      }
       const { data } = await api.post("/auth/login", userData);
       const {
         user: { companyId, id, company },
@@ -182,6 +218,7 @@ Entre em contato com o Suporte para mais informações! `);
     loading,
     handleLogin,
     handleLogout,
+    handleLicence,
     getCurrentUserInfo,
   };
 };

@@ -10,7 +10,6 @@ import { i18n } from "../../translate/i18n";
 import "./style.css";
 import { AuthContext } from "../../context/Auth/AuthContext";
 import logo from "../../assets/logo.png";
-
 const Copyright = () => {
   return (
     <Typography variant="body2" color="primary" align="center">
@@ -23,7 +22,6 @@ const Copyright = () => {
     </Typography>
   );
 };
-
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100vw",
@@ -91,7 +89,7 @@ const Login = () => {
 
   const [user, setUser] = useState({ email: "", password: "" });
 
-  const { handleLogin } = useContext(AuthContext);
+  const { handleLogin, handleLicence } = useContext(AuthContext);
 
   const handleChangeInput = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
@@ -101,6 +99,8 @@ const Login = () => {
     e.preventDefault();
     handleLogin(user);
   };
+
+  handleLicence();
 
   return (
     <div className="geral">
